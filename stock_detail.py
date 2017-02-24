@@ -9,8 +9,8 @@ def data_replace(data):  #截取小数点后两位
 
 def get_one_value(sql):   #获取唯一值
     try:
-        conn = pymssql.connect(host = '120.25.74.151',user = 'Gxs_juling',password = 'gxsq!w@e#',
-                               database = 'juling')
+        conn = pymssql.connect(host = 'xxxxx',user = 'xxxxx',password = 'gxxxxx',
+                               database = 'xxxxxx') #行情数据库连接地址
         cur = conn.cursor()
         cur.execute(sql)
         rows = cur.fetchall()
@@ -23,8 +23,8 @@ def get_one_value(sql):   #获取唯一值
 
 def get_today_money_flow(sql):   #获取今日资金流向
     try:
-        conn = pymssql.connect(host = '120.25.74.151',user = 'Gxs_juling',password = 'gxsq!w@e#',
-                               database = 'juling')
+        conn = pymssql.connect(host = 'xxxxxx',user = 'xxxxxx',password = 'xxxxxx',
+                               database = 'xxxxxx')   #行情数据库连接地址
         cur = conn.cursor()
         cur.execute(sql)
         rows = cur.fetchall()
@@ -37,8 +37,8 @@ def get_today_money_flow(sql):   #获取今日资金流向
 
 def get_values(sql): #获取多个值
     try:
-        conn = pymssql.connect(host = '120.25.74.151',user = 'Gxs_juling',password = 'gxsq!w@e#',
-                               database = 'juling')
+        conn = pymssql.connect(host = 'xxxxxx',user = 'xxxxxxx',password = 'xxxxxxxx',
+                               database = 'xxxxxxxx')   #行情数据库连接地址
         cur = conn.cursor()
         cur.execute(sql)
         rows = cur.fetchall()
