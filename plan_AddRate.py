@@ -3,7 +3,7 @@ import datetime,MySQLdb,re,time
 def get_date(day):
     holiday = []
     try:
-        conn = MySQLdb.connect(host='192.168.10.230', port=3306, user='stocksir', passwd='stocksir1704!', db='stocksir')
+        conn = MySQLdb.connect(host='xxxxxx', port=3306, user='xxxxxx', passwd='xxxxxx', db='xxxxxx')   #数据库连接地址
         cursor = conn.cursor()
         holiday_sql = "SELECT `value` FROM `stock_setting` WHERE `name`= 'holiday'"   #查询法定节假日
         cursor.execute(holiday_sql)
@@ -54,7 +54,7 @@ def get_date(day):
 def plan_rate(date,plan_class):   #根据30日的有效日期，计算出30天的累计收益
     try:
         now_time = str(datetime.date.today()).replace('-', '')
-        conn = MySQLdb.connect(host='192.168.10.230',port=3306,user='stocksir',passwd='stocksir1704!',db='stocksir')
+        conn = MySQLdb.connect(host='xxxxxx',port=xxxxxx,user='xxxxxx',passwd='xxxxxx',db='xxxxxxx')   #数据库连接地址
         cursor = conn.cursor()
         plan_stock_sql = "SELECT SUM(max_rate) FROM `stock_plan_stock` WHERE plan_id IN" + \
                          "(SELECT id FROM `stock_plan` WHERE plan_class_id =" + str(plan_class) + " AND `date` >=" + date + " AND `date` <" + now_time + ")"
