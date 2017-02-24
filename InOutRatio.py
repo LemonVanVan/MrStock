@@ -15,8 +15,8 @@ class hqtest():
         self.stock_name = stock_name
 
     def run(self):
-        r = redis.Redis(host="192.168.10.210",port =6479,db=0)
-        sum_row = len(r.zrange(self.redis_key,0,5000))
+        r = redis.Redis(host="xxxxxxxxx",port =xxxxxxx,db=0)
+        sum_row = len(r.zrange(self.redis_key,0,5000))    #redis库连接地址
         # f = open(self.file_path,'a')
         # f.write("***************************" + self.stock_name + str(self.end_time +1)+ "分K为*****************************" + "\n")
         now_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
