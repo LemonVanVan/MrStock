@@ -14,7 +14,7 @@ def Get_stock_detail(stock_code,release_time,first_price,second_price):
     url = "https://mk.api.guxiansheng.cn/quote/?appid=gxs&mod=quote&method=dealinfo_data&fromwhere=cd&finalCode=" + stock_code + \
           "&pageNo=1&pageSize=5000"
     response = requests.get(url)
-    detail = response.json()['data']
+    detail = response.json()['data']   #response.json()返回的是一个字典类型的数据，['data']就是从字典里面取键值为data的值
     for index in range(0,len(detail)):
         NPR.append(float(detail[index]['PRI']))
         second_time.append(str(detail[index]['DATE'][:8]))
