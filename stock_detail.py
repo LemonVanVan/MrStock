@@ -10,11 +10,11 @@ def data_replace(data):  #截取小数点后两位
 def get_one_value(sql):   #获取唯一值
     try:
         conn = pymssql.connect(host = 'xxxxx',user = 'xxxxx',password = 'gxxxxx',
-                               database = 'xxxxxx') #行情数据库连接地址
-        cur = conn.cursor()
-        cur.execute(sql)
-        rows = cur.fetchall()
-        conn.close()
+                               database = 'xxxxxx')     #行情数据库连接地址
+        cur = conn.cursor()    # 使用cursor()方法获取操作游标
+        cur.execute(sql)     # 使用execute方法执行SQL语句
+        rows = cur.fetchall()     #获取所有记录列表    #使用 fetchone() 方法是获取单条数据,
+        conn.close()      # 关闭数据库连接
         for value in rows:
             return float(value[0])
     except:
@@ -23,7 +23,7 @@ def get_one_value(sql):   #获取唯一值
 
 def get_today_money_flow(sql):   #获取今日资金流向
     try:
-        conn = pymssql.connect(host = 'xxxxxx',user = 'xxxxxx',password = 'xxxxxx',
+        conn = pymssql.connect(host = 'xxxxx',user = 'xxxxx',password = 'gxxxxx',
                                database = 'xxxxxx')   #行情数据库连接地址
         cur = conn.cursor()
         cur.execute(sql)
@@ -37,8 +37,8 @@ def get_today_money_flow(sql):   #获取今日资金流向
 
 def get_values(sql): #获取多个值
     try:
-        conn = pymssql.connect(host = 'xxxxxx',user = 'xxxxxxx',password = 'xxxxxxxx',
-                               database = 'xxxxxxxx')   #行情数据库连接地址
+        conn = pymssql.connect(host = 'xxxxx',user = 'xxxxx',password = 'gxxxxx',
+                               database = 'xxxxxx')   #行情数据库连接地址
         cur = conn.cursor()
         cur.execute(sql)
         rows = cur.fetchall()
@@ -53,8 +53,8 @@ def get_values(sql): #获取多个值
 
 def get_zf(day,stock_code):  #根据天数获取振幅
     close = get_values("select top 10 TCLOSE from dbo.STK_MKT  where seccode = " + stock_code[2:] + " order by SEQ DESC")
-    hour_time = int(time.strftime('%H',time.localtime(time.time())))
-    minute_time = int(time.strftime('%M',time.localtime(time.time())))
+    hour_time = int(time.strftime('%H',time.localtime(time.time())))   #time.time()用于获取当前时间戳，localtime()从返回浮点数的时间辍方式向时间元组转换，strftime()格式化日期
+    minute_time = int(time.strftime('%M',time.localtime(time.time())))  #time.time()用于获取当前时间戳，localtime()从返回浮点数的时间辍方式向时间元组转换，strftime()格式化日期
     if hour_time >= 15 and minute_time>31:
         return close[day-1]
     else:
@@ -103,7 +103,7 @@ def unit_replace(value):  #单位替换
 def Get_stock_detail(stock_code):
     url ="http://mk.api.guxiansheng.cn/quote/?mod=quote&method=time_data&finalCode=" + stock_code +\
          "&fromwhere=cd&num=241&timePoint=0&type=00&appid=gxs&device=36C0FF7E0B81B4C6722D5AA64F3FDD22&token=36C0FF7E0B81B4C6722D5AA64F3FDD22"
-    r = requests.get(url)
+    r = requests.get(url)        #发送请求
     NPRI = float(str((r.json()['NPRI'])[:5])) #最新价
     print u'最新价为：' + str(NPRI)
     OPRI = float(str((r.json()['OPRI'])[:5])) #今开
@@ -121,30 +121,31 @@ def Get_stock_detail(stock_code):
     SSCJL = str(float(r.json()['data'][-1]['TVOL'])/100) #成交量
     print u'成交量为：' + unit_replace(SSCJL)
     SSCJE = str(float(r.json()['data'][-1]['TVAL']))  #成交额
-    print u'成交额为：' + unit_replace(SSCJE)
-    HSL = str(round(((float(SSCJL)*100) /get_one_value
-    ("select top 1  FL_SHR from dbo.STK_SHR_STRU where A_STOCKCODE  = " + repr(stock_code[2:]) + "  order by SEQ desc"))*100,2)) + '%' #换手率
+    print u'成交额为：' + unit_replace(SSCJE)  #调用自定义的unit_replace函数
+
+    HSL = str(round(((float(SSCJL)*100) /get_one_value("select top 1 FL_SHR from dbo.STK_SHR_STRU where A_STOCKCODE  = " + repr(stock_code[2:]) + "  order by SEQ desc"))*100,2)) + '%' #个股换手率 = （买卖单成交量总和） / 流通股本
     print u'换手率为：' + HSL
     #AVPRI = data_replace(float(r.json()['data'][-1]['TVAL']) /float(r.json()['data'][-1]['TVOL'])) #均价
     #print u'均价为：' + AVPRI
     ZF = data_replace(((HPRI - LPRI)/PPRI ) * 100) + '%'  #振幅
     print u'振幅为：' + ZF
-    SYL = data_replace((NPRI / get_one_value("select top 1 EPSP from  dbo.ANA_STK_FIN_IDX where A_STOCKCODE = " + repr(stock_code[2:]) + "  order by SEQ desc"))) #市盈率
+    SYL = data_replace((NPRI / get_one_value("select top 1 EPSP from  dbo.ANA_STK_FIN_IDX where A_STOCKCODE = " + repr(stock_code[2:]) + "  order by SEQ desc")))    #个股市盈率=每股市价/每股税后利润
     print u'市盈率为：' + SYL
-    Five_ZF = data_replace((NPRI - get_zf(5,stock_code))/ get_zf(5,stock_code)*100) + "%" #5日涨幅
+    Five_ZF = data_replace((NPRI - get_zf(5,stock_code))/ get_zf(5,stock_code)*100) + "%"     # 板块N日涨幅 = （当前实时指数 - 第N-1日指数） / 第N-1日指数 * 100%）
     print u'5日涨幅为：' + Five_ZF
-    Eight_ZF = data_replace((NPRI - get_zf(8,stock_code))/ get_zf(8,stock_code)*100) + "%" #8日涨幅
+    Eight_ZF = data_replace((NPRI - get_zf(8,stock_code))/ get_zf(8,stock_code)*100) + "%"     #8日涨幅
     print u'8日涨幅为：' + Eight_ZF
-    MGSY = round(get_one_value("select  top 1 EPSP from  ANA_STK_FIN_IDX where A_STOCKCODE = " + repr(stock_code[2:]) + " and RPT_YEAR ='2016' order by SEQ desc"),2)  #每股收益
+    MGSY = round(get_one_value("select  top 1 EPSP from  ANA_STK_FIN_IDX where A_STOCKCODE = " + repr(stock_code[2:]) + " and RPT_YEAR ='2016' order by SEQ desc"),2)  #每股收益EPSP
     print u'每股收益为：' + str(MGSY)
-    MGJZC = data_replace(get_one_value("select  top 1 BPS from  ANA_STK_FIN_IDX where A_STOCKCODE = " + repr(stock_code[2:]) + " and RPT_YEAR ='2016' order by SEQ desc"))  #每股净资产
+    MGJZC = data_replace(get_one_value("select  top 1 BPS from  ANA_STK_FIN_IDX where A_STOCKCODE = " + repr(stock_code[2:]) + " and RPT_YEAR ='2016' order by SEQ desc"))  #每股净资产BPS
     print u'每股净资产为：' + MGJZC
-    SJL = data_replace(NPRI/float(MGJZC))  #市净率  26492.26400004
+    SJL = data_replace(NPRI/float(MGJZC))  #市净率= 每股市价 / 每股净资产  26492.26400004
     print u'市净率为：' + SJL
     open_time = int(len(r.json()['data']))
-    LB = data_replace(float(SSCJL)/(get_tvolume(stock_code)*(open_time-1)))  #量比
+    LB = data_replace(float(SSCJL)/(get_tvolume(stock_code)*(open_time-1)))  #量比 = 现成交总手/（过去5日平均每分钟成交量×当日累计开市时间（分））
     # print SSCJL,get_tvolume(stock_code),open_time
     print u'量比为：' + LB
+
     GB = get_one_value(" select top 1 FL_SHR from dbo.STK_SHR_STRU where A_STOCKCODE =" + repr(stock_code[2:]) + "  order by SEQ  desc ")
     LTSZ =unit_replace(str(GB * NPRI))  #流通市值
     print u'流通市值为：' + LTSZ
@@ -153,7 +154,7 @@ def Get_stock_detail(stock_code):
     money_flow = get_today_money_flow("SELECT TOP 1 ZL_BUY_VAL,ZL_SELL_VAL,ZL_NET,YZ_BUY_VAL,YZ_SELL_VAL,YZ_NET FROM  QW_STK_CAP_HIS  WITH (NOLOCK)  "
                                   "where STOCKCODE =" + repr(stock_code[2:]) + " ORDER BY SEQ DESC ")
     ZL_BUY = unit_replace(float(money_flow[0]))
-    print u'主力流入：' + ZL_BUY
+    print u'主力流入：' + ZL_BUY   #主力
     ZL_SELL = unit_replace(float(money_flow[1]))
     print u'主力流出：' + ZL_SELL
     ZL_NET = unit_replace(float(money_flow[2]))
@@ -201,10 +202,5 @@ def Get_stock_detail(stock_code):
 
 
 if __name__ == "__main__":
-    Get_stock_detail('sz000935')  #传入股票代码
-    os.system("pause")
-
-
-
-
-
+    Get_stock_detail('sz002023')  #传入股票代码
+os.system("pause")  # 运行shell命令，通过执行操作系统的命令来让程序暂停
