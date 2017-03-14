@@ -37,10 +37,7 @@ def Get_stock_detail(stock_code,release_time,first_price,second_price):
     stock_price.reverse()      #用于反向列表中元素
     # print stock_price
     for price in release_price:
-        print price
         for now_price in stock_price:  #与第一、第二买入价对比，算出当前收益
-            print now_price
-
             if now_price > first_price:       #股机非交易时间发布，开盘后价格没有触及推荐买入价，当前收益=当前价/开盘价-1
                                               #股机交易时间发布，发布后价格没有触及推荐买入价，当前收益=当前价/发出时价格-1
                 rate.append(round(((now_price / price)-1)*100,2))   #round()返回小数点四舍五入到2个数字。
@@ -75,5 +72,5 @@ def Get_stock_detail(stock_code,release_time,first_price,second_price):
         # print u'最大收益为：' + str(max(max_rate))
 
 if __name__ == "__main__":
-    Get_stock_detail('sz002023','10:35',15,16)  #传入股票代码、发布时间、第一价格、第二价格
+    Get_stock_detail('sz002023','11:20',15,16)  #传入股票代码、发布时间、第一价格、第二价格
     # os.system("pause")
